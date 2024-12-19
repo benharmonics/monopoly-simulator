@@ -1,0 +1,37 @@
+[project]
+name = "monopoly-simulator"
+version = "2024.0.0"
+dependencies = []
+requires-python = ">=3.8"
+authors = [
+  {name = "benharmonics"},
+]
+#description = "Lovely Spam! Wonderful Spam!"
+#readme = "README.rst"
+#license = {file = "LICENSE.txt"}
+#keywords = ["egg", "bacon", "sausage", "tomatoes", "Lobster Thermidor"]
+classifiers = [
+  "Programming Language :: Python"
+]
+
+[project.optional-dependencies]
+dev = [
+  "black",
+  "pyright",
+]
+
+#[project.urls]
+#Homepage = "https://example.com"
+#Documentation = "https://readthedocs.org"
+#Repository = "https://github.com/me/spam.git"
+#"Bug Tracker" = "https://github.com/me/spam/issues"
+#Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+
+#[project.scripts]
+#spam-cli = "spam:main_cli"
+
+#[project.gui-scripts]
+#spam-gui = "spam:main_gui"
+
+#[project.entry-points."spam.magical"]
+#tomatoes = "spam:main_tomatoes"
