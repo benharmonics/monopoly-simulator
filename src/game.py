@@ -80,7 +80,9 @@ class Game:
             space.hotel = False
             space.mortgaged = False
 
-    def _player_pay(self, amount: int, player: Player, pay_to: Optional[Player] = None) -> None:
+    def _player_pay(
+        self, amount: int, player: Player, pay_to: Optional[Player] = None
+    ) -> None:
         if player.money <= amount:
             return self._player_bankrupt(player, pay_to)
         player.money -= amount
@@ -92,13 +94,21 @@ class Game:
         for space in self._player_owned_spaces(player):
             self._player_try_buy_houses_and_hotels_on_space(player, space)
 
-    def _player_try_buy_houses_and_hotels_on_space(self, player: Player, space: Space) -> None:
+    def _player_try_buy_houses_and_hotels_on_space(
+        self, player: Player, space: Space
+    ) -> None:
         # railroads, utilities can be purchased, but houses cannot be built on them
         if not space.meta.building_price:
             return
-        assert space.meta.color is not None, "Color should exist on spaces when buying houses/hotels"
-        assert space.owned_by is not None, "When buying houses/hotels, space must be owned"
-        assert space.owned_by == player.id, "When buying houses/hotels, space must be owned by player"
+        assert (
+            space.meta.color is not None
+        ), "Color should exist on spaces when buying houses/hotels"
+        assert (
+            space.owned_by is not None
+        ), "When buying houses/hotels, space must be owned"
+        assert (
+            space.owned_by == player.id
+        ), "When buying houses/hotels, space must be owned by player"
         if not spaces.player_owns_all_color(
             self.board, space.meta.color, space.owned_by
         ):
@@ -117,7 +127,6 @@ class Game:
             logging.info(
                 f"Player {player.id} purchased hotel on {space.meta.name} for ${space.meta.building_price}"
             )
-
 
     def _player_turn(self, player: Player, remaining_rolls=3):
         roll1, roll2 = randint(1, 6), randint(1, 6)
