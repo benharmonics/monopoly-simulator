@@ -379,8 +379,10 @@ UTILITIES = list(
     if s.name == "Electric Company" or s.name == "Waterworks"
 )
 
+
 def _space_name(space: int) -> str:
     return _meta[space].name
+
 
 def rent_value(board: list[Space], space: Space) -> int:
     assert space.owned_by is not None
@@ -440,6 +442,7 @@ def rent_value(board: list[Space], space: Space) -> int:
         else rent
     )
 
+
 def board() -> list[Space]:
     return [Space(m) for m in _meta]
 
@@ -451,14 +454,10 @@ def next_railroad(start: int) -> int:
 def next_utility(start: int) -> int:
     return next(i for i in UTILITIES if start > i or UTILITIES[0])
 
+
 def player_owns_all_color(board: list[Space], color: str, player_id: int) -> bool:
     color_count = len(list(s for s in board if s.meta.color == color))
     owned_count = len(
-        list(
-            s
-            for s in board
-            if s.meta.color == color and s.owned_by == player_id
-        )
+        list(s for s in board if s.meta.color == color and s.owned_by == player_id)
     )
     return color_count == owned_count
-

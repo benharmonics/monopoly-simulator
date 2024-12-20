@@ -89,7 +89,9 @@ class Game:
         player.money += passed_go * 200
         if passed_go:
             logging.debug(f"Player {player.id} has passed GO and collected $200")
-        logging.debug(f"Player {player.id} landed on space {spaces._space_name(player.space)}")
+        logging.debug(
+            f"Player {player.id} landed on space {spaces._space_name(player.space)}"
+        )
 
         self._player_interact_with_space(player)
 
@@ -114,7 +116,9 @@ class Game:
             # railroads, utilities can be purchased, but have no color, and
             if not space.meta.color or not space.owned_by:
                 continue
-            if not spaces.player_owns_all_color(self.board, space.meta.color, space.owned_by):
+            if not spaces.player_owns_all_color(
+                self.board, space.meta.color, space.owned_by
+            ):
                 continue
             if player.money <= space.meta.building_price or space.hotel:
                 continue
