@@ -9,7 +9,7 @@ class Card:
     effect: Callable
 
 
-class Cards:
+class Deck:
     def __init__(self, cards: list[Card]) -> None:
         self._cards = cards
         self._discard: list[Card] = []
