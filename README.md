@@ -7,13 +7,13 @@ e.g. player money.
 
 ## Upcoming Features
 
-[ ] Mortgages
-[ ] Limit houses/hotels
-[ ] Limit Get Out of Jail Free cards
-[ ] Use Get Out of Jail Free cards when available
-[ ] Track frequency of spaces
-[ ] Manage properties to avoid bankruptcy
-[ ] Player strategies (all players simply play greedily)
+- [ ] Mortgages
+- [ ] Limit houses/hotels
+- [ ] Limit Get Out of Jail Free cards
+- [ ] Use Get Out of Jail Free cards when available
+- [ ] Track frequency of spaces
+- [ ] Manage properties to avoid bankruptcy
+- [ ] Player strategies (all players simply play greedily)
 
 ## Notes on rules
 
