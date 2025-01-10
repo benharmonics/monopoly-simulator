@@ -36,9 +36,7 @@ class Game:
                     "Advance to Boardwalk",
                     _advance_to(spaces.BOARDWALK, pay_on_pass_go=False),
                 ),
-                Card(
-                    "Advance to Go (Collect $200)", _advance_to(spaces.GO)
-                ),
+                Card("Advance to Go (Collect $200)", _advance_to(spaces.GO)),
                 Card(
                     "Advance to Illinois Avenue. If you pass Go, collect $200",
                     _advance_to(spaces.ILLINOIS_AVENUE),
@@ -87,12 +85,8 @@ class Game:
         )
         self.community_deck = Deck(
             [
-                Card(
-                    "Advance to Go (Collect $200)", _advance_to(spaces.GO)
-                ),
-                Card(
-                    "Bank error in your favor. Collect $200", _payout(200)
-                ),
+                Card("Advance to Go (Collect $200)", _advance_to(spaces.GO)),
+                Card("Bank error in your favor. Collect $200", _payout(200)),
                 Card("Doctor’s fee. Pay $50", lambda p: self._pay(50, p)),
                 Card("From sale of stock you get $50", _payout(50)),
                 Card("Get Out of Jail Free", _receive_get_out_of_jail_free),
@@ -171,7 +165,9 @@ class Game:
             if pay_to:
                 pay_to.money += player.money
             return self._bankrupt(player, pay_to)
-        logging.debug(f"Player {player.id} pays ${amount} to {pay_to.id if pay_to else 'the bank'}")
+        logging.debug(
+            f"Player {player.id} pays ${amount} to {pay_to.id if pay_to else 'the bank'}"
+        )
         if pay_to:
             pay_to.money += amount
         player.money -= amount
@@ -193,9 +189,11 @@ class Game:
         """
         Chance Card/Community Chest
         """
+
         def _inner(p: Player) -> None:
             p.space = (p.space - 3) % len(board)
             self._interact_with_space(p)
+
         return _inner
 
     def _make_repairs(self, p: Player, price_per_house: int, price_per_hotel: int):
@@ -302,22 +300,20 @@ def _owned_spaces(board: list[Space], player: Player) -> list[Space]:
     return list(s for s in board if s.owned_by == player.id)
 
 
-def _buy_houses_and_hotels_on_space(board: list[Space], player: Player, space: Space) -> None:
+def _buy_houses_and_hotels_on_space(
+    board: list[Space], player: Player, space: Space
+) -> None:
     # railroads, utilities can be purchased, but houses cannot be built on them
     if not space.meta.building_price:
         return
     assert (
         space.meta.color is not None
     ), "Color should exist on spaces when buying houses/hotels"
-    assert (
-        space.owned_by is not None
-    ), "When buying houses/hotels, space must be owned"
+    assert space.owned_by is not None, "When buying houses/hotels, space must be owned"
     assert (
         space.owned_by == player.id
     ), "When buying houses/hotels, space must be owned by player"
-    if not spaces.player_owns_all_color(
-        board, space.meta.color, space.owned_by
-    ):
+    if not spaces.player_owns_all_color(board, space.meta.color, space.owned_by):
         return
     if player.money <= space.meta.building_price or space.hotel:
         return
@@ -343,14 +339,15 @@ def _advance_to(space_i: int, pay_on_pass_go: bool = True) -> Callable:
         if p.space > space_i and pay_on_pass_go:
             p.money += 200
         p.space = space_i
+
     return _inner
 
 
 def _payout(amount: int) -> Callable:
     def _inner(p: Player) -> None:
         p.money += amount
-    return _inner
 
+    return _inner
 
 
 def _advance_to_railroad(p: Player):
