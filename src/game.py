@@ -16,10 +16,10 @@ def simulate(player_count: int = 4, max_turns: int = 100, plot: bool = False) ->
     Returns the number of turns in the game before a single player wins or the max turn count is reached.
     """
     game = Game(player_count, max_turns)
-    game.run()
+    nturns = game.run()
     if plot:
         game.plot()
-    return game._turn
+    return nturns
 
 
 class Game:
@@ -116,7 +116,7 @@ class Game:
             ]
         )
 
-    def run(self) -> None:
+    def run(self) -> int:
         """
         Run a new game until either a single player wins or the max number of turns is reached.
         """
@@ -130,8 +130,9 @@ class Game:
         if self._turn == self._max_turns:
             logging.debug(f"Max turn count reached: {self._turn}")
             logging.debug(f"Final state: {self._players}")
-            return
+            return self._turn
         logging.info(f"Winner: {self._players} | Turns: {self._turn}")
+        return self._turn
 
     def plot(self) -> None:
         """
