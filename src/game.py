@@ -183,7 +183,6 @@ class Game:
 
     def _elected_chairman_of_board(self, p: Player):
         """
-        Chance card
         Chance Card/Community Chest
         """
         for other_player in self._players:
