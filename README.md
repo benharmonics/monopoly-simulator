@@ -7,7 +7,9 @@ e.g. player money.
 
 ## Running
 
-You can import the simulator with `import game`, then run it with `game.simulate()`. The default behavior when running `main.py` is to simulate several thousand games and compute the average game length, but you could run all sorts of statistical analysis - as the game is run, its metadata is recorded and contained in the `Game` class.
+You can import the simulator with `import game`, then run a full simulation with `game.simulate()`. The default behavior when running `main.py` is to simulate several thousand games and compute the average game length, but you could run all sorts of statistical analysis - as the game is run, its metadata is recorded and contained in the `Game` class.
+
+To run a single game and access its metadata, create a `Game` object with a given number of players and max turns, then run the simulation with the `run()` method. Note that you should set a reasonable number of max turns because some games can spiral out of control and go on forever if the bank has infinite money (see [Notes on rules](#Notes on rules) below).
 
 ## Upcoming Features
 
