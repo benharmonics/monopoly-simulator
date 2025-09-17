@@ -1,7 +1,9 @@
 from random import randint
+from typing import Optional
 
 from chance import ChanceCards
 import spaces
+from spaces import Space
 import logging
 from player import Player
 
@@ -20,6 +22,9 @@ class Game:
             logging.info(f"End of turn: {self.players}")
         logging.info(f"Winner: {self.players}")
 
+    def _player_owned_spaces(self, player: Player) -> list[Space]:
+        return list(s for s in self.board if s.owned_by == player.id)
+
     def _player_interact_with_space(self, player: Player):
         space = self.board[player.space]
         # Buy unpurchased spaces
@@ -29,15 +34,14 @@ class Game:
             logging.info(
                 f"Player {player.id} purchasing {space.meta.name} for {space.meta.buying_price}"
             )
-            player.money -= space.meta.buying_price
+            self._player_pay(space.meta.buying_price, player)
             space.owned_by = player.id
             return
         # Pay rent
         if space.owned_by and space.owned_by != player.id:
             rent = spaces.rent_value(self.board, space)
             other = next(p for p in self.players if p.id == space.owned_by)
-            player.money -= rent
-            other.money += rent
+            self._player_pay(space.meta.buying_price, player, other)
             logging.info(
                 f"Player {player.id} paid rent of ${rent} to Player {space.owned_by} for {space.meta.name}"
             )
@@ -55,9 +59,9 @@ class Game:
                 # landing here, which is the "feature" if this space, per se.
                 ...
             case spaces.INCOME_TAX:
-                player.money -= 200
+                self._player_pay(200, player)
             case spaces.LUXURY_TAX:
-                player.money -= 100
+                self._player_pay(100, player)
             case s if s in list(spaces.CHANCES):
                 card = self.chance_cards.draw()
                 logging.info(f"Chance time for Player {player.id}: {card.name}")
@@ -68,6 +72,53 @@ class Game:
                 )
                 ...
 
+    def _player_bankrupt(self, player: Player, pay_to: Optional[Player] = None) -> None:
+        logging.info(f"Player {player.id} has gone bankrupt and is exiting the game")
+        for space in self._player_owned_spaces(player):
+            space.owned_by = pay_to.id if pay_to else None
+            space.houses = 0
+            space.hotel = False
+            space.mortgaged = False
+
+    def _player_pay(self, amount: int, player: Player, pay_to: Optional[Player] = None) -> None:
+        if player.money <= amount:
+            return self._player_bankrupt(player, pay_to)
+        player.money -= amount
+        if pay_to:
+            pay_to.money += amount
+
+    def _player_try_buy_houses_and_hotels(self, player: Player) -> None:
+        # TODO: strategic property-buying
+        for space in self._player_owned_spaces(player):
+            self._player_try_buy_houses_and_hotels_on_space(player, space)
+
+    def _player_try_buy_houses_and_hotels_on_space(self, player: Player, space: Space) -> None:
+        # railroads, utilities can be purchased, but houses cannot be built on them
+        if not space.meta.building_price:
+            return
+        assert space.meta.color is not None, "Color should exist on spaces when buying houses/hotels"
+        assert space.owned_by is not None, "When buying houses/hotels, space must be owned"
+        assert space.owned_by == player.id, "When buying houses/hotels, space must be owned by player"
+        if not spaces.player_owns_all_color(
+            self.board, space.meta.color, space.owned_by
+        ):
+            return
+        if player.money <= space.meta.building_price or space.hotel:
+            return
+        player.money -= space.meta.building_price
+        if space.houses < 4:
+            space.houses += 1
+            logging.info(
+                f"Player {player.id} purchased house on {space.meta.name} for ${space.meta.building_price}"
+            )
+        else:
+            space.houses = 0
+            space.hotel = True
+            logging.info(
+                f"Player {player.id} purchased hotel on {space.meta.name} for ${space.meta.building_price}"
+            )
+
+
     def _player_turn(self, player: Player, remaining_rolls=3):
         roll1, roll2 = randint(1, 6), randint(1, 6)
         rolled_doubles = roll1 == roll2
@@ -77,6 +128,8 @@ class Game:
             logging.debug(
                 f"Player {player.id} is in jail and can't  move ({player.jail_sentence} turns remaining)"
             )
+            self._player_try_buy_houses_and_hotels(player)
+            return
 
         if rolled_doubles and remaining_rolls < 1:
             logging.debug(f"Player {player.id}, go to jail! (Triple-Doubles)")
@@ -94,46 +147,9 @@ class Game:
         )
 
         self._player_interact_with_space(player)
-
-        # Bankruptcy
         if player.money <= 0:
-            logging.info(
-                f"Player {player.id} has gone bankrupt and is exiting the game"
-            )
-            for space in self.board:
-                if space.owned_by != player.id:
-                    continue
-                space.owned_by = None
-                space.mortgaged = False
-                space.houses = 0
-                space.hotel = False
-            return
-
-        # Buy houses/hotels
-        for space in self.board:
-            if space.owned_by != player.id:
-                continue
-            # railroads, utilities can be purchased, but have no color, and
-            if not space.meta.color or not space.owned_by:
-                continue
-            if not spaces.player_owns_all_color(
-                self.board, space.meta.color, space.owned_by
-            ):
-                continue
-            if player.money <= space.meta.building_price or space.hotel:
-                continue
-            player.money -= space.meta.building_price
-            if space.houses < 4:
-                space.houses += 1
-                logging.info(
-                    f"Player {player.id} purchased house on {space.meta.name} for ${space.meta.building_price}"
-                )
-            else:
-                space.houses = 0
-                space.hotel = True
-                logging.info(
-                    f"Player {player.id} purchased hotel on {space.meta.name} for ${space.meta.building_price}"
-                )
+            return self._player_bankrupt(player)
+        self._player_try_buy_houses_and_hotels(player)
 
         if rolled_doubles:
             if player.jail_sentence != 0:
