@@ -11,6 +11,10 @@ from player import Player
 
 
 def simulate(player_count: int = 4, max_turns: int = 100, plot: bool = False) -> int:
+    """
+    Run a simulated monopoly game, optionally plotting the money each player has over time.
+    Returns the number of turns in the game before a single player wins or the max turn count is reached.
+    """
     game = Game(player_count, max_turns)
     game.run()
     if plot:
@@ -57,7 +61,7 @@ class Game:
                 ),
                 Card("Bank pays you dividend of $50", _payout(50)),
                 Card("Get Out of Jail Free", _receive_get_out_of_jail_free),
-                Card("Go Back 3 Spaces", _go_back_three_spaces(self._board)),
+                Card("Go Back 3 Spaces", self._go_back_three_spaces(self._board)),
                 Card(
                     "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200",
                     _go_to_jail,
@@ -119,6 +123,9 @@ class Game:
         )
 
     def run(self) -> None:
+        """
+        Run a new game until either a single player wins or the max number of turns is reached.
+        """
         while len(self._players) > 1 and self._turn < self._max_turns:
             self._turn += 1
             for player in self._players:
@@ -133,6 +140,9 @@ class Game:
         logging.info(f"Winner: {self._players} | Turns: {self._turn}")
 
     def plot(self) -> None:
+        """
+        Plot player money over time. This should only be called after the game has been simulated.
+        """
         for i in range(self._player_count):
             plt.plot(self._history[: self._turn, i], label=f"Player {i + 1}")
         plt.xlabel("Turn Count")
@@ -142,6 +152,9 @@ class Game:
         plt.show()
 
     def _bankrupt(self, player: Player, pay_to: Optional[Player] = None) -> None:
+        """
+        Bankrupt a player, optionally paying out debts to another player.
+        """
         logging.debug(f"Player {player.id} has gone bankrupt and is exiting the game")
         player.money = 0
         for space in _owned_spaces(self._board, player):
@@ -158,6 +171,7 @@ class Game:
             if pay_to:
                 pay_to.money += player.money
             return self._bankrupt(player, pay_to)
+        logging.debug(f"Player {player.id} pays ${amount} to {pay_to.id if pay_to else 'the bank'}")
         if pay_to:
             pay_to.money += amount
         player.money -= amount
@@ -168,11 +182,27 @@ class Game:
             _buy_houses_and_hotels_on_space(self._board, player, space)
 
     def _elected_chairman_of_board(self, p: Player):
+        """
+        Chance card
+        Chance Card/Community Chest
+        """
         for other_player in self._players:
             if other_player.id != p.id:
                 self._pay(50, p, other_player)
 
+    def _go_back_three_spaces(self, board: list[Space]) -> Callable:
+        """
+        Chance Card/Community Chest
+        """
+        def _inner(p: Player) -> None:
+            p.space = (p.space - 3) % len(board)
+            self._interact_with_space(p)
+        return _inner
+
     def _make_repairs(self, p: Player, price_per_house: int, price_per_hotel: int):
+        """
+        Chance Card/Community Chest
+        """
         amount = sum(
             price_per_hotel if s.hotel else price_per_house * s.houses
             for s in _owned_spaces(self._board, p)
@@ -180,6 +210,9 @@ class Game:
         self._pay(amount, p)
 
     def _it_is_your_birthday(self, p: Player):
+        """
+        Chance Card/Community Chest
+        """
         for other_player in self._players:
             if other_player.id != p.id:
                 self._pay(50, other_player, p)
@@ -292,13 +325,13 @@ def _buy_houses_and_hotels_on_space(board: list[Space], player: Player, space: S
     player.money -= space.meta.building_price
     if space.houses < 4:
         space.houses += 1
-        logging.info(
+        logging.debug(
             f"Player {player.id} purchased house on {space.meta.name} for ${space.meta.building_price}"
         )
     else:
         space.houses = 0
         space.hotel = True
-        logging.info(
+        logging.debug(
             f"Player {player.id} purchased hotel on {space.meta.name} for ${space.meta.building_price}"
         )
 
@@ -339,12 +372,6 @@ def _advance_to_utility(p: Player):
 
 def _receive_get_out_of_jail_free(p: Player):
     p.get_out_of_jail_cards += 1
-
-
-def _go_back_three_spaces(board: list[Space]) -> Callable:
-    def _inner(p: Player) -> None:
-        p.space = (p.space - 3) % len(board)
-    return _inner
 
 
 def _go_to_jail(p: Player):
