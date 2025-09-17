@@ -1,7 +1,10 @@
 [project]
 name = "monopoly-simulator"
 version = "2024.0.0"
-dependencies = []
+dependencies = [
+  "matplotlib",
+  "numpy",
+]
 requires-python = ">=3.8"
 authors = [
   {name = "benharmonics"},
