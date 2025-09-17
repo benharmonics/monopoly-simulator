@@ -306,13 +306,10 @@ def _buy_houses_and_hotels_on_space(
     # railroads, utilities can be purchased, but houses cannot be built on them
     if not space.meta.building_price:
         return
-    assert (
-        space.meta.color is not None
-    ), "Color should exist on spaces when buying houses/hotels"
+    assert space.meta.color is not None, "Color expected on space when buying property"
     assert space.owned_by is not None, "When buying houses/hotels, space must be owned"
-    assert (
-        space.owned_by == player.id
-    ), "When buying houses/hotels, space must be owned by player"
+    assert space.owned_by == player.id, "Player must own space to buy property"
+    # Player can only buy houses if they own all of that color
     if not spaces.player_owns_all_color(board, space.meta.color, space.owned_by):
         return
     if player.money <= space.meta.building_price or space.hotel:
@@ -323,12 +320,12 @@ def _buy_houses_and_hotels_on_space(
         logging.debug(
             f"Player {player.id} purchased house on {space.meta.name} for ${space.meta.building_price}"
         )
-    else:
-        space.houses = 0
-        space.hotel = True
-        logging.debug(
-            f"Player {player.id} purchased hotel on {space.meta.name} for ${space.meta.building_price}"
-        )
+        return
+    space.houses = 0
+    space.hotel = True
+    logging.debug(
+        f"Player {player.id} purchased hotel on {space.meta.name} for ${space.meta.building_price}"
+    )
 
 
 # Community Chest/Chance Cards
