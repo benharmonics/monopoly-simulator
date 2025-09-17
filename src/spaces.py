@@ -367,12 +367,12 @@ READING_RAILROAD = next(i for i, s in enumerate(_meta) if s.name == "Reading Rai
 
 # Groups
 CHANCES = list(i for i, s in enumerate(_meta) if s.name == "Chance")
+COMMUNITY_CHESTS = list(i for i, s in enumerate(_meta) if s.name == "Community Chest")
 RAILROADS = list(
     i
     for i, s in enumerate(_meta)
     if s.name.endswith("Railroad") or s.name == "Short Line"
 )
-COMMUNITY_CHESTS = list(i for i, s in enumerate(_meta) if s.name == "Community Chest")
 UTILITIES = list(
     i
     for i, s in enumerate(_meta)
