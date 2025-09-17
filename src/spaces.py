@@ -1,12 +1,13 @@
 from dataclasses import dataclass
+from random import randint
 from typing import Optional
 
 
 @dataclass
 class Meta:
     name: str
-    color: Optional[str]
-    buying_price: int
+    color: Optional[str] = None
+    buying_price: int = 0
     building_price: int = 0
     rent: int = 0
     rent_with_one_house: int = 0
@@ -16,18 +17,18 @@ class Meta:
     rent_with_hotel: int = 0
 
 
-_spaces = [
+@dataclass
+class Space:
+    meta: Meta
+    houses: int = 0
+    hotel: bool = False
+    owned_by: Optional[int] = None
+    mortgaged: bool = False
+
+
+_meta = [
     Meta(
         name="Go",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Mediterranean Avenue",
@@ -43,15 +44,6 @@ _spaces = [
     ),
     Meta(
         name="Community Chest",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Baltic Avenue",
@@ -67,27 +59,10 @@ _spaces = [
     ),
     Meta(
         name="Income Tax",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Reading Railroad",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
+        buying_price=200,
     ),
     Meta(
         name="Oriental Avenue",
@@ -103,15 +78,6 @@ _spaces = [
     ),
     Meta(
         name="Chance",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Vermont Avenue",
@@ -139,15 +105,6 @@ _spaces = [
     ),
     Meta(
         name="Jail / Just Visiting",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="St. Charles Place",
@@ -163,15 +120,7 @@ _spaces = [
     ),
     Meta(
         name="Electric Company",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
+        buying_price=150,
     ),
     Meta(
         name="States Avenue",
@@ -199,15 +148,7 @@ _spaces = [
     ),
     Meta(
         name="Pennsylvania Railroad",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
+        buying_price=200,
     ),
     Meta(
         name="St. James Place",
@@ -223,15 +164,6 @@ _spaces = [
     ),
     Meta(
         name="Community Chest",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Tennessee Avenue",
@@ -259,15 +191,6 @@ _spaces = [
     ),
     Meta(
         name="Free Parking",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Kentucky Avenue",
@@ -283,15 +206,6 @@ _spaces = [
     ),
     Meta(
         name="Chance",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Indiana Avenue",
@@ -319,15 +233,7 @@ _spaces = [
     ),
     Meta(
         name="B. & O. Railroad",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
+        buying_price=200,
     ),
     Meta(
         name="Atlantic Avenue",
@@ -355,15 +261,7 @@ _spaces = [
     ),
     Meta(
         name="Waterworks",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
+        buying_price=150,
     ),
     Meta(
         name="Marvin Gardens",
@@ -379,15 +277,6 @@ _spaces = [
     ),
     Meta(
         name="Go To Jail",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Pacific Avenue",
@@ -415,15 +304,6 @@ _spaces = [
     ),
     Meta(
         name="Community Chest",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Pennsylvania Avenue",
@@ -439,27 +319,10 @@ _spaces = [
     ),
     Meta(
         name="Short Line",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
+        buying_price=200,
     ),
     Meta(
         name="Chance",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Park Place",
@@ -475,15 +338,6 @@ _spaces = [
     ),
     Meta(
         name="Luxury Tax",
-        color=None,
-        buying_price=0,
-        building_price=0,
-        rent=0,
-        rent_with_one_house=0,
-        rent_with_two_houses=0,
-        rent_with_three_houses=0,
-        rent_with_four_houses=0,
-        rent_with_hotel=0,
     ),
     Meta(
         name="Boardwalk",
@@ -499,25 +353,112 @@ _spaces = [
     ),
 ]
 
-
-def board() -> list:
-    return _spaces
-
-
-def name(space: int) -> str:
-    return _spaces[space].name
-
-
 # Individual spaces
 GO = 0
-JAIL = next(
-    i for i, space in enumerate(_spaces) if space.name == "Jail / Just Visiting"
-)
-GO_TO_JAIL = next(i for i, space in enumerate(_spaces) if space.name == "Go To Jail")
-INCOME_TAX = next(i for i, space in enumerate(_spaces) if space.name == "Income Tax")
-COMMUNITY_CHEST = next(
-    i for i, space in enumerate(_spaces) if space.name == "Community Chest"
-)
+JAIL = next(i for i, s in enumerate(_meta) if s.name == "Jail / Just Visiting")
+GO_TO_JAIL = next(i for i, s in enumerate(_meta) if s.name == "Go To Jail")
+FREE_PARKING = next(i for i, s in enumerate(_meta) if s.name == "Free Parking")
+INCOME_TAX = next(i for i, s in enumerate(_meta) if s.name == "Income Tax")
+LUXURY_TAX = next(i for i, s in enumerate(_meta) if s.name == "Luxury Tax")
+BOARDWALK = next(i for i, s in enumerate(_meta) if s.name == "Boardwalk")
+ILLINOIS_AVENUE = next(i for i, s in enumerate(_meta) if s.name == "Illinois Avenue")
+ST_CHARLES_PLACE = next(i for i, s in enumerate(_meta) if s.name == "St. Charles Place")
+READING_RAILROAD = next(i for i, s in enumerate(_meta) if s.name == "Reading Railroad")
 
 # Groups
-CHANCES = (i for i, space in enumerate(_spaces) if space.name == "Chance")
+CHANCES = list(i for i, s in enumerate(_meta) if s.name == "Chance")
+RAILROADS = list(
+    i
+    for i, s in enumerate(_meta)
+    if s.name.endswith("Railroad") or s.name == "Short Line"
+)
+COMMUNITY_CHESTS = list(i for i, s in enumerate(_meta) if s.name == "Community Chest")
+UTILITIES = list(
+    i
+    for i, s in enumerate(_meta)
+    if s.name == "Electric Company" or s.name == "Waterworks"
+)
+
+def _space_name(space: int) -> str:
+    return _meta[space].name
+
+def rent_value(board: list[Space], space: Space) -> int:
+    assert space.owned_by is not None
+    if space.meta.name in map(_space_name, RAILROADS):
+        owned_count = len(
+            list(
+                s
+                for s in board
+                if s.meta.name in map(_space_name, RAILROADS)
+                and s.owned_by == space.owned_by
+            )
+        )
+        match owned_count:
+            case 1:
+                return 25
+            case 2:
+                return 50
+            case 3:
+                return 100
+            case 4:
+                return 200
+            case _:
+                raise AssertionError(f"invalid railroad count {owned_count}")
+    if space.meta.name in map(_space_name, UTILITIES):
+        owned_count = len(
+            list(
+                s
+                for s in board
+                if s.meta.name in map(_space_name, UTILITIES)
+                and s.owned_by == space.owned_by
+            )
+        )
+        assert 0 < owned_count <= 2, f"invalid utility count {owned_count}"
+        roll = randint(1, 6) * randint(1, 6)
+        return 4 * roll if owned_count == 1 else 10 * roll
+    assert space.meta.color is not None, f"unexpected space {space.meta.name}"
+    match space.houses:
+        case 0:
+            rent = space.meta.rent
+        case 1:
+            rent = space.meta.rent_with_one_house
+        case 2:
+            rent = space.meta.rent_with_two_houses
+        case 3:
+            rent = space.meta.rent_with_three_houses
+        case 4:
+            rent = space.meta.rent_with_four_houses
+        case _:
+            raise AssertionError(
+                f"invalid number of houses on {space.meta.name}: {space.houses}"
+            )
+    if space.hotel:  # overwrites 0 houses case
+        rent = space.meta.rent_with_hotel
+    return (
+        rent * 2
+        if player_owns_all_color(board, space.meta.color, space.owned_by)
+        else rent
+    )
+
+def board() -> list[Space]:
+    return [Space(m) for m in _meta]
+
+
+def next_railroad(start: int) -> int:
+    return next(i for i in RAILROADS if start > i or RAILROADS[0])
+
+
+def next_utility(start: int) -> int:
+    return next(i for i in UTILITIES if start > i or UTILITIES[0])
+
+def player_owns_all_color(board: list[Space], color: str, player_id: int) -> bool:
+    color_count = len(list(s for s in board if s.meta.color == color))
+    owned_count = len(
+        list(
+            s
+            for s in board
+            if s.meta.color == color and s.owned_by == player_id
+        )
+    )
+    return color_count == owned_count
+
