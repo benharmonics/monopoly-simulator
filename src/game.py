@@ -7,6 +7,7 @@ from spaces import Space
 import logging
 from player import Player
 
+
 def _advance_to(p: Player, space_i: int, pay_on_pass_go: bool = True) -> None:
     if p.space > space_i and pay_on_pass_go:
         p.money += 200
@@ -15,6 +16,7 @@ def _advance_to(p: Player, space_i: int, pay_on_pass_go: bool = True) -> None:
 
 def _payout(p: Player, amount: int) -> None:
     p.money += amount
+
 
 def _advance_to_railroad(p: Player):
     railroad = spaces.next_railroad(p.space)
@@ -40,6 +42,7 @@ def _go_to_jail(p: Player):
     p.space = spaces.JAIL
     p.jail_sentence = 3
 
+
 class Game:
     def __init__(self, players: int = 4, max_turns: int = 100) -> None:
         self.max_turns = max_turns
@@ -51,7 +54,9 @@ class Game:
                     "Advance to Boardwalk",
                     lambda p: _advance_to(p, spaces.BOARDWALK, pay_on_pass_go=False),
                 ),
-                Card("Advance to Go (Collect $200)", lambda p: _advance_to(p, spaces.GO)),
+                Card(
+                    "Advance to Go (Collect $200)", lambda p: _advance_to(p, spaces.GO)
+                ),
                 Card(
                     "Advance to Illinois Avenue. If you pass Go, collect $200",
                     lambda p: _advance_to(p, spaces.ILLINOIS_AVENUE),
@@ -79,21 +84,34 @@ class Game:
                     "Go to Jail. Go directly to Jail, do not pass Go, do not collect $200",
                     _go_to_jail,
                 ),
-                Card("Make general repairs on all your property. For each house pay $25. For each hotel pay $100", lambda p: self._make_repairs(p, 25, 100)),
+                Card(
+                    "Make general repairs on all your property. For each house pay $25. For each hotel pay $100",
+                    lambda p: self._make_repairs(p, 25, 100),
+                ),
                 Card("Speeding fine $15", lambda p: self._pay(15, p)),
                 Card(
                     "Take a trip to Reading Railroad. If you pass Go, collect $200",
                     lambda p: _advance_to(p, spaces.READING_RAILROAD),
                 ),
-                Card("You have been elected Chairman of the Board. Pay each player $50", self._elected_chairman_of_board),
-                Card("Your building loan matures. Collect $150", lambda p: _payout(p, 150)),
+                Card(
+                    "You have been elected Chairman of the Board. Pay each player $50",
+                    self._elected_chairman_of_board,
+                ),
+                Card(
+                    "Your building loan matures. Collect $150",
+                    lambda p: _payout(p, 150),
+                ),
             ]
         )
 
         self.community_cards = Cards(
             [
-                Card("Advance to Go (Collect $200)", lambda p: _advance_to(p, spaces.GO)),
-                Card("Bank error in your favor. Collect $200", lambda p: _payout(p, 200)),
+                Card(
+                    "Advance to Go (Collect $200)", lambda p: _advance_to(p, spaces.GO)
+                ),
+                Card(
+                    "Bank error in your favor. Collect $200", lambda p: _payout(p, 200)
+                ),
                 Card("Doctor’s fee. Pay $50", lambda p: self._pay(50, p)),
                 Card("From sale of stock you get $50", lambda p: _payout(p, 50)),
                 Card("Get Out of Jail Free", _receive_get_out_of_jail_free),
@@ -103,12 +121,18 @@ class Game:
                 ),
                 Card("Holiday fund matures. Receive $100", lambda p: _payout(p, 100)),
                 Card("Income tax refund. Collect $20", lambda p: _payout(p, 20)),
-                Card("It is your birthday. Collect $10 from every player", self._it_is_your_birthday),
+                Card(
+                    "It is your birthday. Collect $10 from every player",
+                    self._it_is_your_birthday,
+                ),
                 Card("Life insurance matures. Collect $100", lambda p: _payout(p, 100)),
                 Card("Pay hospital fees of $100", lambda p: self._pay(100, p)),
                 Card("Pay school fees of $50", lambda p: self._pay(50, p)),
                 Card("Receive $25 consultancy fee", lambda p: _payout(p, 25)),
-                Card("You are assessed for street repair. $40 per house. $115 per hotel", lambda p: self._make_repairs(p, 40, 115)),
+                Card(
+                    "You are assessed for street repair. $40 per house. $115 per hotel",
+                    lambda p: self._make_repairs(p, 40, 115),
+                ),
                 Card(
                     "You have won second prize in a beauty contest. Collect $10",
                     lambda p: _payout(p, 10),
@@ -143,7 +167,10 @@ class Game:
                 self._pay(50, p, other_player)
 
     def _make_repairs(self, p: Player, price_per_house: int, price_per_hotel: int):
-        amount = sum(price_per_hotel if s.hotel else price_per_house * s.houses for s in self._owned_spaces(p))
+        amount = sum(
+            price_per_hotel if s.hotel else price_per_house * s.houses
+            for s in self._owned_spaces(p)
+        )
         self._pay(amount, p)
 
     def _it_is_your_birthday(self, p: Player):
